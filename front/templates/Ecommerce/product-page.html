@@ -1,0 +1,113 @@
+{% extends "Ecommerce/home-page.html" %}
+{% block title %}Product Description{% endblock title %}
+{% load static %}
+{% load cart_template_tags %}
+
+
+
+{% block body %}
+  <!-- Navbar -->
+  {% include 'Ecommerce/navbar.html' %}
+  <!-- Navbar -->
+
+  <!--Main layout-->
+  <main class="mt-5 pt-4">
+    <div class="container dark-grey-text mt-5">
+
+      <!--Grid row-->
+      <div class="row wow fadeIn">
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <img src="{{object.image.url}}" class="img-fluid" alt="">
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+
+          <!--Content-->
+          <div class="p-4">
+
+            <div class="mb-3">
+              <a href="">
+                <span class="badge purple mr-1">{{object.get_category_display}}</span>
+              </a>
+             
+              </a>
+            </div>
+
+            <p class="lead">
+              {% if  object.discount_price %}
+              <span class="mr-1">
+                <del>Rs.{{object.price}}</del>
+              </span>
+              <span>Rs.{{object.discount_price}}</span>
+              {% else %}
+              <span>Rs.{{object.price}}</span>
+              {% endif %}
+            </p>
+            
+           
+            <p class="lead font-weight-bold">Description</p>
+
+            <p>{{object.description}}</p>
+
+            <form class="d-flex justify-content-left">
+              <!-- Default input -->
+              {% comment %} <input type="number" value="1" aria-label="Search" class="form-control" style="width: 100px"> {% endcomment %}
+              {% if user.is_authenticated %}
+              <a href="{{object.get_add_to_cart}}" class="btn btn-primary btn-md my-0 p" type="submit">Add to cart</a>
+              {% comment %} <a href="{{object.get_remove_from_cart}}" class="btn btn-primary btn-md my-0 p" type="submit">Remove From Cart</a> {% endcomment %}
+              {% else %}
+              <h5>Please login to buy</h5>
+              {% endif %}
+             
+                
+
+            </form>
+
+          </div>
+          <!--Content-->
+
+        </div>
+        <!--Grid column-->
+
+      </div>
+      <!--Grid row-->
+
+    
+
+      <!--Grid row-->
+      
+      <!--Grid row-->
+
+      
+    </div>
+  </main>
+  <!--Main layout-->
+
+  <!--Footer-->
+  <footer class="page-footer text-center font-small mt-4 wow fadeIn">
+
+    <!--Call to action-->
+    
+    <!--/.Call to action-->
+
+    <hr class="my-4">
+
+  
+
+   
+
+  </footer>
+  <!--/.Footer-->
+
+  <!-- SCRIPTS -->
+  
+  {% endblock body %}
+
+
+

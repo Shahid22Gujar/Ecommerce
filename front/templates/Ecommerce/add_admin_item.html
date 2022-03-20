@@ -1,0 +1,14 @@
+{% extends 'Ecommerce/home-page.html' %}
+{% load crispy_forms_tags %}
+{% block body %}
+{% include 'Ecommerce/navbar.html' %}
+<div class="container " style="margin-top:106px;">
+   
+    <h3>Add Item</h3>
+    <form method="POST" action="{% url 'admin-add-item' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+{{form|crispy}}
+<input type="submit" class="btn btn-success mt-2">
+    </form>
+</div>
+{% endblock body %}

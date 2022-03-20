@@ -1,0 +1,186 @@
+{% extends 'Ecommerce/home-page.html' %}
+{% load cart_template_tags %}
+{% load static %}
+{% block title %}
+    Summary
+{% endblock title %}
+{% block body %}
+<nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
+    <div class="container">
+
+      <!-- Brand -->
+      <a class="navbar-brand waves-effect" href="/" >
+        <strong class="blue-text">Ecommerce</strong>
+      </a>
+      
+      {% if user.is_authenticated and user.is_staff and user.is_superuser %}
+      <a class="navbar-brand btn btn-warning " href="{% url 'admin_dashboard' %}" >
+        <strong class="blue-text">Admin Dashboard</strong>
+      </a>
+  
+      {% endif %}
+      
+
+      <!-- Collapse -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Links -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <!-- Left -->
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+           
+        </ul>
+        
+      
+        <!-- Right -->
+        <ul class="navbar-nav nav-flex-icons">
+         
+          
+          {% if request.user.is_authenticated %}
+          
+          <li class="nav-item mx-1">
+            <p class="nav-link waves-effect "
+            style="background-color:whitesmoke;"
+             >
+              {{request.user.first_name}}
+          </p>
+            <div class="container">
+         
+             
+          </li>
+          <li class="nav-item mx-1">
+            <a href="{% url 'account_logout' %}" class="nav-link border border-light rounded waves-effect"
+             >
+              Logout
+            </a>
+            
+          </li>
+          <li class="nav-item mx-1">
+            <a href="{% url 'request-refund' %}" class="nav-link border border-light rounded waves-effect"
+             >
+              Refund
+            </a>
+          </li>
+          <li class="nav-item mx-1">
+            <a href="{% url 'track-order' %}" class="nav-link border border-light rounded waves-effect"
+            >
+              Track Order
+            </a>
+          </li>
+          {% else %}
+          <li class="nav-item mx-1">
+            <a href="{% url 'account_login' %}" class="nav-link border border-light rounded waves-effect"
+              >
+           Login
+            </a>
+          </li>
+          
+          <li class="nav-item mx-1">
+            <a href="{% url 'signup' %}" class="nav-link border border-light rounded waves-effect"
+              target="_blank">
+              Register
+            </a>
+          </li>
+         
+          {% endif %}
+          {% if user.is_authenticated %}
+ 
+         
+          <li class="nav-item">
+            <a href="{% url 'order-summary' %}" class="nav-link waves-effect">
+              <span class="badge red z-depth-1 mr-1"> {{request.user|cart_item_count}} </span>
+              <i class="fas fa-shopping-cart"></i>
+              <span class="clearfix d-none d-sm-inline-block"> Cart </span>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+
+      </div>
+
+    </div>
+  </nav>
+  <!-- Navbar -->
+    <div class="container" style="margin-top: 90px;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible mt-3 " role="alert">
+                    <span type="button"
+                          class="close"
+                          data-bs-dismiss="alert"
+                          aria-label="Close"><span aria-hidden="true">&times;</span></span>
+                    <strong>{{ message }}</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="table-responsive">
+            <h3 class="mt-2">Order Summary</h3>
+            <table class="table  mt-4 text-center">
+                {% if not empty %}
+                    <tr>
+                        <td><img src="{% static 'empty_cart.png' %}"><br>Your cart is empty</td>
+                        <a class="btn btn-dark float-right" href="/">Continue Shopping</a>
+                    </tr>
+                {% else %}
+                    <thead>
+                        <tr>
+                            <th scope="col">SNo.</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            {% for object in order.items.all %}
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td>{{ object.item.title }}</td>
+                                    <td>{{ object.item.price }}</td>
+                                    <td>
+                                        <a href="{% url 'add-to-cart' object.item.slug %}"> <i class="fas fa-plus mr-2"></i></a>
+                                        {{ object.quantity }}
+                                        <a href="{% url 'remove-single-item-from-cart' object.item.slug %}"><i class="fas fa-minus ml-2"></i>
+                                    </td>
+                                </a>
+                                <td>
+                                    {% if object.get_total_item_discount_price %}
+                                        {{ object.get_total_item_discount_price }}
+                                        <span class="badge badge-primary">Saving:{{ object.get_saved_amount }}</span>
+                                    {% else %}
+                                        {{ object.get_total_item_price }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a style="color:red;"
+                                       href="{% url 'remove-from-cart' object.item.slug %}"><i class="fas fa-trash float-right"></i<a />
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            {% if order.coupon %}
+                                <td>
+                                    <b>{{ order.coupon.code }}: -{{ order.coupon.amount }}</b>
+                                </td>
+                            {% endif %}
+                            <td>
+                                <b>Total Amount:{{ order.total_amount }}</b>
+                            </td>
+                        </tr>
+                        {% if order.total_amount %}
+                            <a class="btn btn-warning float-right" href="{% url 'check_out' %}">Proceed To Checkout</a>
+                            <a class="btn btn-dark float-right" href="/">Continue Shopping</a>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            {% endif %}
+        </table>
+    </div>
+</div>
+{% endblock body %}
